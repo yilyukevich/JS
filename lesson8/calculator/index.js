@@ -7,36 +7,36 @@ const calculator = {
 
     handler: function (event) {
         let target = event.target;
-        calculator.inputArea = document.querySelector(".input_area_text");
-        calculator.historyArea = document.querySelector(".history");
+        this.inputArea = document.querySelector(".input_area_text");
+        this.historyArea = document.querySelector(".history");
 
         switch (target.className) {
             case "input_symbol_button":
-                calculator.updateInput(target.value);
+                this.updateInput(target.value);
                 break;
             case "action_symbol_ce":
-                calculator.clear();
+                this.clear();
                 break;
             case "action_symbol_execute":
-                calculator.execute();
+                this.execute();
         }
     },
 
     updateInput(symbol) {
         if (symbol === 'R') {
-            if (calculator.isActionSymbol(calculator.inputArea.value.at(-1))) {
-                calculator.blockAction = false;
+            if (this.isActionSymbol(this.inputArea.value.at(-1))) {
+                this.blockAction = false;
             }
-            calculator.inputArea.value = calculator.inputArea.value.slice(0, -1);
+            this.inputArea.value = this.inputArea.value.slice(0, -1);
 
-        } else if (calculator.isActionSymbol(symbol)) {
-            if (!calculator.blockAction) {
-                calculator.inputArea.value += symbol;
-                calculator.blockAction = true;
+        } else if (this.isActionSymbol(symbol)) {
+            if (!this.blockAction) {
+                this.inputArea.value += symbol;
+                this.blockAction = true;
             }
 
         } else {
-            calculator.inputArea.value += symbol;
+            this.inputArea.value += symbol;
         }
     },
 
@@ -45,18 +45,19 @@ const calculator = {
     },
 
     clear() {
-        calculator.inputArea.value = "";
-        calculator.blockAction = false;
+        this.inputArea.value = "";
+        this.blockAction = false;
     },
 
     execute: function () {
-        let expression = calculator.parse(calculator.inputArea.value);
+        let expression = this.parse(this.inputArea.value);
         if (expression.length === 3)    {
-            let result = calculator.run(expression[0], expression[1], expression[2]).toFixed(3);
-            calculator.inputArea.value = result;
+            let result = this.run(expression[0], expression[1], expression[2]);
+			
+            this.inputArea.value = Number.isInteger(result) ? result : result.toFixed(3);
 
-            calculator.updateHistory(expression[0] + expression[1] + expression[2] + "=" + result);
-            calculator.blockAction = false;
+            this.updateHistory(expression[0] + expression[1] + expression[2] + "=" + result);
+            this.blockAction = false;
         }                
     },
 
@@ -95,10 +96,10 @@ const calculator = {
     },
 
     updateHistory(value)    {
-        calculator.historyArea.innerHTML += "<p>" + value + "</p>";
+        this.historyArea.innerHTML += "<p>" + value + "</p>";
     }
 
 };
 
 let calc = document.querySelector(".calc");
-document.addEventListener('click', calculator.handler);
+calc.addEventListener('click', calculator.handler.bind(calculator));
